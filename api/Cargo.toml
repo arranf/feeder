@@ -1,0 +1,11 @@
+[package]
+name = "feeder"
+version = "0.1.0"
+authors = ["Arran France <arran@arranfrance.com>"]
+edition = "2018"
+
+[dependencies]
+actix-web = "0.7"
+diesel = { version = "1.4.1", features = ["postgres"] }
+serde = "1.0"
+serde_derive = "1.0"
