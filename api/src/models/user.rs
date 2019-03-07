@@ -9,3 +9,10 @@ pub struct User {
     pub password: String,
     pub created_at: NaiveDateTime, // only NaiveDateTime works here due to diesel limitations
 }
+
+impl User {
+    pub fn remove_pwd(mut self) -> Self {
+        self.password = "".to_string();
+        self
+    }
+}

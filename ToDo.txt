@@ -1,0 +1,3 @@
+* Store feed URL in database with feed name
+* On request - get hostname and render feed name based on hostname
+* On request - get feed based on hostname 

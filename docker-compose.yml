@@ -14,7 +14,7 @@ services:
   api:
     build: ./api
     ports: 
-      - "8080:8080"
+      - "8000:8000"
     volumes:
       - ./api:/usr/src/app
     links:
@@ -22,12 +22,12 @@ services:
     # diesel infer_schema macro gives warnings with this flag.
     # environment:
     #   - CARGO_INCREMENTAL=1
-    command: bash -c "bash ./wait-for-it.sh db:5432 -q -- diesel setup && cargo watch -x run"
+    command: bash -c "bash ./wait-for-it.sh db:5431 -q -- diesel setup && cargo watch -x run"
 
   db:
     image: "postgres:9"
     ports: 
-      - "5432:5432"
+      - "5431:5431"
     volumes:
       - pgdata:/var/lib/postgresql/data/pgdata
     environment:
