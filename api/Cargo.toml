@@ -5,7 +5,6 @@ authors = ["Arran France <arran@arranfrance.com>"]
 edition = "2018"
 
 [dependencies]
-log = "0.4"
 env_logger = "0.6"
 actix = "0.7"
 actix-web = { version="0.7", features=["alpn"] }
