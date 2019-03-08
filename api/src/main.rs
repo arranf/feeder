@@ -21,7 +21,7 @@ use actix_web::dev::HttpResponseBuilder;
 use futures::{future::ok as fut_ok, Future};
 use std::env;
 
-fn get_external_feed() -> Box<Future<Item = String, Error = Error>> {
+fn get_rss_feed() -> Box<Future<Item = String, Error = Error>> {
     Box::new(
         client::ClientRequest::get("https://blog.arranfrance.dev/index.xml")
             .finish()
@@ -36,8 +36,30 @@ fn get_external_feed() -> Box<Future<Item = String, Error = Error>> {
     )
 }
 
+fn get_json_feed() -> Box<Future<Item = String, Error = Error>> {
+    Box::new(
+        client::ClientRequest::get("https://blog.arranfrance.dev/feed.json")
+            .finish()
+            .unwrap()
+            .send()
+            .map_err(Error::from)
+            .and_then(|resp: client::ClientResponse| {
+                resp.body()
+                    .from_err()
+                    .and_then(|body| fut_ok(String::from_utf8(body.to_vec()).unwrap()))
+            }),
+    )
+}
+
+fn json_feed(req: &HttpRequest) -> Box<Future<Item = String, Error = Error>> {
+    get_json_feed()
+        // .and_then(HttpResponse::Ok().build())
+        // .and_then(|string: String| Ok(HttpResponse::Ok().content_type("application/json").body(string)))
+        // .responder()
+}
+
 fn feed(req: &HttpRequest) -> Box<Future<Item = HttpResponse, Error = Error>> {
-    get_external_feed()
+    get_rss_feed()
         .and_then(|string: String| Ok(HttpResponse::Ok().content_type("text/xml").body(string)))
         .responder()
 }
@@ -67,7 +89,6 @@ fn main() {
                 middleware::DefaultHeaders::new().header("Access-Control-Allow-Origin", "*"),
             )
             .resource("/", |r| {
-                
                  // Web app if Accept text/html
                  r
                     .route()
@@ -75,19 +96,20 @@ fn main() {
                     .filter(IsBrowser())
                     .f(show_web_app);
                 
+                // JSON response if they Accept application/json
                 r
                   .route()
                   .filter(pred::Get())
                   .filter(AcceptsJSON())
-                  .f(
-                    |req| HttpResponse::Created());
+                  .f(json_feed);
 
-                // 
+                // If it's a GET show the plain RSS feed
                 r
                     .route()
                     .filter(pred::Get())
                     .f(feed);
                 
+                // Otherwise disallow
                 r.route().filter(pred::Not(pred::Get())).f(
                     |req| HttpResponse::MethodNotAllowed());
 
