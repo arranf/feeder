@@ -1,4 +1,4 @@
-#![allow(unused_variables)]
+#![allow(clippy::all)]
 
 extern crate actix;
 extern crate actix_web;
@@ -50,24 +50,23 @@ fn get_json_feed() -> Box<Future<Item = String, Error = Error>> {
     )
 }
 
-fn json_feed(req: &HttpRequest) -> Box<Future<Item = String, Error = Error>> {
+fn json_feed(_req: &HttpRequest) -> Box<Future<Item = HttpResponse, Error = Error>> {
     get_json_feed()
-        // .and_then(HttpResponse::Ok().build())
-        // .and_then(|string: String| Ok(HttpResponse::Ok().content_type("application/json").body(string)))
-        // .responder()
+        .and_then(|string: String| Ok(HttpResponse::Ok().content_type("application/json").body(string)))
+        .responder()
 }
 
-fn feed(req: &HttpRequest) -> Box<Future<Item = HttpResponse, Error = Error>> {
+fn feed(_req: &HttpRequest) -> Box<Future<Item = HttpResponse, Error = Error>> {
     get_rss_feed()
         .and_then(|string: String| Ok(HttpResponse::Ok().content_type("text/xml").body(string)))
         .responder()
 }
 
-fn show_web_app(req: &HttpRequest) -> HttpResponseBuilder {
+fn show_web_app(_req: &HttpRequest) -> HttpResponseBuilder {
     HttpResponse::Ok()
 }
 
-fn handle_404(req: &HttpRequest) -> Result<fs::NamedFile> {
+fn handle_404(_req: &HttpRequest) -> Result<fs::NamedFile> {
     Ok(fs::NamedFile::open("static/404.html")?.set_status_code(StatusCode::NOT_FOUND))
 }
 
@@ -81,7 +80,7 @@ fn main() {
 
     println!("Binding to 8000");
 
-    let addr = server::new(|| {
+    let _addr = server::new(|| {
         App::new()
             .middleware(middleware::Logger::default())
             .middleware(
@@ -110,7 +109,7 @@ fn main() {
                 
                 // Otherwise disallow
                 r.route().filter(pred::Not(pred::Get())).f(
-                    |req| HttpResponse::MethodNotAllowed());
+                    |_req| HttpResponse::MethodNotAllowed());
 
             })
             .default_resource(|r| {
@@ -120,7 +119,7 @@ fn main() {
                 // all requests that are not `GET`
                 r.route()
                     .filter(pred::Not(pred::Get()))
-                    .f(|req| HttpResponse::MethodNotAllowed());
+                    .f(|_req| HttpResponse::MethodNotAllowed());
             })
             .finish()
     })
