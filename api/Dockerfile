@@ -1,6 +1,6 @@
 FROM rust:1.33
 
-RUN cargo install diesel_cli --no-default-features --features postgres
+RUN cargo install
 
 RUN cargo install cargo-watch
 

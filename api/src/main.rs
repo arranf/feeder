@@ -4,7 +4,6 @@ extern crate actix;
 extern crate actix_web;
 extern crate env_logger;
 extern crate futures;
-extern crate json;
 extern crate openssl_probe;
 
 mod browser_predicate;
