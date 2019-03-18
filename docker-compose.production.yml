@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  api:
+    depends_on:
+      - api-letsencrypt
+  api-letsencrypt:
+    image: linuxserver/letsencrypt
+    container_name: api-letsencrypt
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./config/letsencrypt:/config
+    environment:
+      - EMAIL=feeder@arranfrance.com
+      - URL=feeder.arranfrance.com
+      - SUBDOMAINS=www,api
+      - VALIDATION=http
+      - TZ=Europe/Stockholm
+      - PUID=0

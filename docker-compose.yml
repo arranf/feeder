@@ -23,6 +23,7 @@ services:
     # environment:
     #   - CARGO_INCREMENTAL=1
     command: bash -c "cargo watch -x run"
+    restart: always
 
   # db:
   #   image: "postgres:9"
