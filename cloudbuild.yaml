@@ -1,0 +1,6 @@
+steps:
+- name: 'docker/compose:1.19.0'
+  args: ['-f', 'docker-compose.yml', '-f', 'docker-compose.production.yml', 'up', '-d']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['tag', 'feeder_api:latest', 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA']
+images: ['gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA']
